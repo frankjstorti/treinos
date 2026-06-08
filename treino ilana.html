@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>Guia de Treino</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --card:#171a21;
+    --card2:#1d212b;
+    --line:#272c38;
+    --txt:#f2f4f8;
+    --muted:#9aa3b2;
+    --green:#27e08a;
+    --green-dim:#0f3a2a;
+    --green-txt:#5ff0aa;
+    --accent:#5b8cff;
+    --warn:#ffce5b;
+    --warn-bg:#332b12;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:64px;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:16px 14px}
+  header.top{
+    position:sticky;top:0;z-index:20;
+    background:rgba(15,17,21,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding:12px 14px;
+    display:flex;align-items:center;gap:10px;
+  }
+  header.top .ttl{font-weight:800;font-size:18px;letter-spacing:.2px}
+  header.top .sp{flex:1}
+  .pill{
+    background:var(--card2);border:1px solid var(--line);
+    color:var(--txt);border-radius:999px;padding:8px 14px;
+    font-size:14px;font-weight:700;cursor:pointer;
+  }
+  .pill:active{transform:scale(.97)}
+  h1{font-size:24px;margin:6px 0 4px;font-weight:800}
+  .lead{color:var(--muted);font-size:15px;margin:0 0 18px}
+
+  /* Princípios */
+  details.princ{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);margin-bottom:18px;overflow:hidden;
+  }
+  details.princ summary{
+    list-style:none;cursor:pointer;padding:14px 16px;
+    font-weight:800;font-size:16px;display:flex;align-items:center;gap:10px;
+  }
+  details.princ summary::-webkit-details-marker{display:none}
+  details.princ summary .chev{margin-left:auto;color:var(--muted);transition:transform .2s}
+  details.princ[open] summary .chev{transform:rotate(90deg)}
+  .princ-body{padding:0 16px 14px}
+  .princ-item{
+    border-top:1px solid var(--line);padding:11px 0;font-size:14.5px;color:var(--muted)
+  }
+  .princ-item b{color:var(--txt)}
+
+  /* Seletor inicial */
+  .ask{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px 16px;margin-bottom:18px;
+  }
+  .ask h2{margin:0 0 4px;font-size:19px}
+  .ask p{margin:0 0 14px;color:var(--muted);font-size:14px}
+  .opts{display:grid;gap:9px}
+  .opt{
+    text-align:left;width:100%;
+    background:var(--card2);border:1px solid var(--line);color:var(--txt);
+    border-radius:12px;padding:13px 14px;font-size:15.5px;font-weight:700;
+    cursor:pointer;display:flex;align-items:center;gap:11px;
+  }
+  .opt:active{transform:scale(.99);border-color:var(--accent)}
+  .opt .num{
+    flex:none;width:26px;height:26px;border-radius:7px;background:#222836;
+    display:grid;place-items:center;font-size:13px;color:var(--muted)
+  }
+  .opt .sub{display:block;font-size:12.5px;color:var(--muted);font-weight:600}
+  .opt.none{background:#14181f;color:var(--muted)}
+
+  /* Resultado próximo treino */
+  .nextbar{
+    background:linear-gradient(135deg,var(--green-dim),#13261d);
+    border:1px solid #1f6b48;border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:14px;
+  }
+  .nextbar .k{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--green-txt);font-weight:800}
+  .nextbar .v{font-size:21px;font-weight:800;margin-top:2px}
+  .nextbar .v small{display:block;font-size:13.5px;color:#cfe9dd;font-weight:600;margin-top:2px}
+  .nextbar .hint{font-size:12.5px;color:#bfe6d3;margin-top:8px}
+
+  /* Navegação treinos */
+  .tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    flex:none;background:var(--card2);border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap
+  }
+  .tab.active{background:var(--green);border-color:var(--green);color:#04140c}
+  .tab.tab-opt{border-style:dashed}
+
+  /* Cabeçalho do treino */
+  .whead{margin:4px 0 12px}
+  .whead .tag{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:1px;text-transform:uppercase}
+  .whead h2{margin:2px 0 2px;font-size:23px}
+  .whead .desc{color:var(--muted);font-size:14.5px}
+
+  .aviso{
+    background:var(--warn-bg);border:1px solid #5a4a18;color:#ffe6a8;
+    border-radius:12px;padding:11px 13px;font-size:13.5px;margin:0 0 14px;display:flex;gap:9px
+  }
+  .aviso b{color:var(--warn)}
+
+  /* Cards de exercício */
+  .ex{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:13px;margin-bottom:13px;
+    transition:opacity .15s;
+  }
+  .ex.done{opacity:.55}
+  .ex .row{display:flex;align-items:flex-start;gap:11px}
+  .ex .chk{flex:none;margin-top:2px}
+  .ex .chk input{
+    appearance:none;width:26px;height:26px;border-radius:8px;
+    border:2px solid var(--line);background:var(--card2);cursor:pointer;position:relative;
+  }
+  .ex .chk input:checked{background:var(--green);border-color:var(--green)}
+  .ex .chk input:checked::after{
+    content:"";position:absolute;left:8px;top:3px;width:6px;height:12px;
+    border:solid #04140c;border-width:0 3px 3px 0;transform:rotate(45deg)
+  }
+  .ex .info{flex:1;min-width:0}
+  .ex .name{font-size:16.5px;font-weight:800;line-height:1.25}
+  .ex.done .name{text-decoration:line-through}
+  .ex .meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
+  .badge{
+    font-size:13px;font-weight:800;border-radius:8px;padding:4px 9px;
+    background:#222836;color:#cdd5e3;
+  }
+  .badge.sets{background:#202637;color:#cfe0ff}
+  .badge.green{background:var(--green-dim);color:var(--green-txt);border:1px solid #1f6b48}
+  .note{font-size:13.5px;color:var(--muted);margin-top:7px}
+  .note.exec{color:var(--green-txt)}
+
+  .imgs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}
+  .imgs.one{grid-template-columns:1fr}
+  .imgs figure{margin:0;border-radius:11px;overflow:hidden;background:#0c0e12;border:1px solid var(--line);aspect-ratio:1/1}
+  .imgs img{width:100%;height:100%;object-fit:cover;display:block;background:#0c0e12}
+  .ph{
+    width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:10px;background:repeating-linear-gradient(45deg,#171a21,#171a21 10px,#1b1f28 10px,#1b1f28 20px);
+    color:var(--muted);font-size:12.5px;font-weight:700;line-height:1.3
+  }
+
+  .cardio{
+    background:#13202c;border:1px solid #1d3b52;border-radius:12px;
+    padding:12px 14px;margin-bottom:13px;display:flex;gap:10px;align-items:center
+  }
+  .cardio .ic{font-size:20px}
+  .cardio b{color:#8fd0ff}
+
+  /* progresso */
+  .prog{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:11px 14px;margin:2px 0 14px;display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--muted)
+  }
+  .prog .bar{flex:1;height:8px;border-radius:99px;background:#222836;overflow:hidden}
+  .prog .bar i{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
+  .prog button{
+    background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:8px;padding:6px 10px;font-size:12.5px;font-weight:700;cursor:pointer
+  }
+
+  footer{
+    position:fixed;left:0;right:0;bottom:0;z-index:15;
+    background:rgba(15,17,21,.96);backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);
+    text-align:center;font-size:13.5px;color:var(--muted);
+    padding:13px 14px;font-weight:700;
+  }
+  footer b{color:var(--green-txt)}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="ttl">💪 Treino</span>
+  <span class="sp"></span>
+  <button class="pill" id="homeBtn">Início</button>
+</header>
+
+<main class="wrap">
+
+  <!-- PRINCÍPIOS -->
+  <details class="princ" id="princ">
+    <summary>📋 Princípios do treino <span class="chev">›</span></summary>
+    <div class="princ-body">
+      <div class="princ-item"><b>Intensidade:</b> na maioria das séries, pare quando ainda conseguiria fazer mais 1 ou 2 repetições (repetições na reserva). Falha real só na <b>última série</b> de isolados seguros (extensora, flexora, abdutora, panturrilha). Nunca até a falha em agachamento, leg press, stiff/terra.</div>
+      <div class="princ-item"><b>Progressão:</b> anote carga/reps; a meta é manter ou subir semana a semana.</div>
+      <div class="princ-item"><b>Aquecimento:</b> 1–2 séries leves de aproximação antes de agachamento, leg press e stiff.</div>
+      <div class="princ-item"><b>Descanso:</b> 1 min nos superiores; 1m30–2 min nos inferiores pesados; 45s–1 min no metabólico.</div>
+    </div>
+  </details>
+
+  <!-- TELA INICIAL: SELETOR -->
+  <section id="home">
+    <h1>Qual foi o seu último treino?</h1>
+    <p class="lead">Toque no que você fez por último — eu te mostro o próximo da rotação.</p>
+    <div class="ask">
+      <div class="opts" id="opts"></div>
+    </div>
+    <button class="pill" id="allBtn" style="width:100%;padding:13px">Ver todos os treinos →</button>
+  </section>
+
+  <!-- TELA DE TREINO -->
+  <section id="view" class="hidden">
+    <div class="nextbar hidden" id="nextbar">
+      <div class="k">Seu próximo treino</div>
+      <div class="v" id="nextName"></div>
+      <div class="hint" id="nextHint"></div>
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+
+    <div id="workout"></div>
+  </section>
+
+</main>
+
+<footer>Siga sua dieta conforme <b>prescrição</b>.</footer>
+
+<script>
+/* ---------- MAPA DE IMAGENS (verificado, 200) ---------- */
+const IMG = {
+  "Puxada Alta (pegada pronada)": "Wide-Grip_Lat_Pulldown",
+  "Remada Curvada ou Máquina (pegada supinada)": "Reverse_Grip_Bent-Over_Rows",
+  "Pulldown com corda": "Rope_Straight-Arm_Pulldown",
+  "Rosca Direta (polia ou halter)": "Barbell_Curl",
+  "Rosca Martelo (halter)": "Hammer_Curls",
+  "Agachamento Livre ou Hack": "Barbell_Full_Squat",
+  "Leg Press 45º (pés mais baixos)": "Leg_Press",
+  "Avanço ou Passada com Halteres": "Dumbbell_Lunges",
+  "Cadeira Extensora": "Leg_Extensions",
+  "Panturrilha no Leg Press": "Calf_Press_On_The_Leg_Press_Machine",
+  "Panturrilha Sentado (máquina)": "Seated_Calf_Raise",
+  "Supino Reto ou Inclinado (máquina/halter)": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+  "Crossover ou Crucifixo (máquina/polia)": "Cable_Crossover",
+  "Desenvolvimento com Halteres": "Dumbbell_Shoulder_Press",
+  "Elevação Lateral (halter)": "Side_Lateral_Raise",
+  "Tríceps Polia (corda)": "Triceps_Pushdown_-_Rope_Attachment",
+  "Tríceps Francês ou Testa": "Seated_Triceps_Press",
+  "Elevação Pélvica (barra ou máquina)": "Barbell_Hip_Thrust",
+  "Stiff ou Terra Romeno": "Romanian_Deadlift",
+  "Cadeira Flexora": "Seated_Leg_Curl",
+  "Mesa Flexora": "Lying_Leg_Curls",
+  "Cadeira Abdutora": "Thigh_Abductor",
+  "Glúteo na Polia (coice)": "One-Legged_Cable_Kickback",
+  "Elevação Lateral na Polia (unilateral)": "Cable_Seated_Lateral_Raise",
+  "Crucifixo Invertido (máquina ou halter)": "Reverse_Machine_Flyes",
+  "Remada Alta (polia)": "Upright_Cable_Row",
+  "Prancha Abdominal": "Plank",
+  "Abdominal Infra (elevação de pernas)": "Flat_Bench_Lying_Leg_Raise",
+  "Elevação Pélvica Unilateral ou Frog Pump": "Single_Leg_Glute_Bridge",
+  "Glúteo Cabo (abdução lateral)": "Side_Leg_Raises",
+  "Cadeira Extensora Unilateral": "Single-Leg_Leg_Extension",
+  "Mesa Flexora Unilateral": "Lying_Leg_Curls",
+  "Panturrilha em Pé (Peso livre ou máquina)": "Standing_Calf_Raises"
+};
+
+/* ---------- TREINOS ---------- */
+// exec:true  -> observação de execução correta (destaque verde)
+const TREINOS = [
+  {
+    nome:"Superior 1", desc:"Costas e Bíceps + Cárdio", tag:"Treino 1 · Superior", opt:false,
+    ex:[
+      {n:"Puxada Alta (pegada pronada)", s:"3 séries de 10 a 12 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Remada Curvada ou Máquina (pegada supinada)", s:"3 séries de 10 a 12 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Pulldown com corda", s:"3 séries de 12 a 15 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Rosca Direta (polia ou halter)", s:"3 séries de 12 a 15 repetições", obs:"Última série até a falha", exec:true},
+      {n:"Rosca Martelo (halter)", s:"2 séries de 12 a 15 repetições", obs:"Última série até a falha", exec:true},
+    ],
+    cardio:"45 min caminhada inclinada ou bike (Zona 2)"
+  },
+  {
+    nome:"Inferior 1", desc:"Quadríceps e Panturrilha · pesado", tag:"Treino 2 · Inferior", opt:false,
+    ex:[
+      {n:"Agachamento Livre ou Hack", s:"4 séries de 8 a 10 repetições", obs:"Pare com 2 repetições na reserva · 2 séries de aproximação antes", exec:true},
+      {n:"Leg Press 45º (pés mais baixos)", s:"4 séries de 10 a 12 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Avanço ou Passada com Halteres", s:"3 séries de 10 a 12 repetições (cada perna)", obs:"Pare com 2 repetições na reserva"},
+      {n:"Cadeira Extensora", s:"4 séries de 12 a 15 repetições", obs:"Última série até a falha (drop-set ok)", exec:true},
+      {n:"Panturrilha no Leg Press", s:"4 séries de 12 a 15 repetições", obs:"Última série até a falha", exec:true},
+      {n:"Panturrilha Sentado (máquina)", s:"3 séries de 12 a 15 repetições", obs:"Última série até a falha", exec:true},
+    ]
+  },
+  {
+    nome:"Superior 2", desc:"Peito, Ombro e Tríceps + Cárdio", tag:"Treino 3 · Superior", opt:false,
+    ex:[
+      {n:"Supino Reto ou Inclinado (máquina/halter)", s:"3 séries de 10 a 12 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Crossover ou Crucifixo (máquina/polia)", s:"2 séries de 12 a 15 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Desenvolvimento com Halteres", s:"3 séries de 10 a 12 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Elevação Lateral (halter)", s:"4 séries de 12 a 15 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Tríceps Polia (corda)", s:"3 séries de 12 a 15 repetições", obs:"Última série até a falha", exec:true},
+      {n:"Tríceps Francês ou Testa", s:"2 séries de 12 a 15 repetições", obs:"Última série até a falha", exec:true},
+    ],
+    cardio:"45 min (Zona 2)"
+  },
+  {
+    nome:"Inferior 2", desc:"Posteriores e Glúteo · pesado", tag:"Treino 4 · Inferior", opt:false,
+    ex:[
+      {n:"Elevação Pélvica (barra ou máquina)", s:"4 séries de 8 a 10 repetições", obs:"Pare com 2 repetições na reserva"},
+      {n:"Stiff ou Terra Romeno", s:"4 séries de 8 a 10 repetições", obs:"Pare com 2 repetições na reserva · técnica/amplitude antes de carga · 2 séries de aproximação · exercício de maior risco", exec:true},
+      {n:"Cadeira Flexora", s:"4 séries de 10 a 12 repetições", obs:"Última série até a falha", exec:true},
+      {n:"Mesa Flexora", s:"3 séries de 10 a 12 repetições", obs:"Contração de pico de 2s · última série até a falha", exec:true},
+      {n:"Cadeira Abdutora", s:"4 séries de 12 a 15 repetições", obs:"Tronco inclinado à frente · última série até a falha", exec:true},
+      {n:"Glúteo na Polia (coice)", s:"3 séries de 12 a 15 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+    ]
+  },
+  {
+    nome:"Superior 3", desc:"Ombros e Core + Cárdio", tag:"Treino 5 · Superior", opt:false,
+    aviso:"O ombro já recebe bastante volume no Treino 3. Se sentir sobrecarga, a Remada Alta é a primeira a sair.",
+    ex:[
+      {n:"Elevação Lateral na Polia (unilateral)", s:"3 séries de 12 a 15 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Crucifixo Invertido (máquina ou halter)", s:"3 séries de 12 a 15 repetições", obs:"Pare com 1 a 2 repetições na reserva"},
+      {n:"Remada Alta (polia)", s:"3 séries de 12 a 15 repetições", obs:"Pare com 1 a 2 repetições na reserva · opcional/cortável"},
+      {n:"Prancha Abdominal", s:"3 séries de 30 a 45 segundos", obs:"Movimento controlado", exec:true},
+      {n:"Abdominal Infra (elevação de pernas)", s:"3 séries de 15 a 20 repetições", obs:""},
+    ],
+    cardio:"45 min (Zona 2)"
+  },
+  {
+    nome:"Inferior 3", desc:"Glúteo / Metabólico · OPCIONAL", tag:"Treino 6 · Inferior", opt:true,
+    aviso:"Faça se chegar disposta; senão vira caminhada longa ou descanso. Descanso 45s–1 min.",
+    ex:[
+      {n:"Cadeira Abdutora", s:"4 séries de 15 a 20 repetições", obs:"Com isometria", exec:true},
+      {n:"Elevação Pélvica Unilateral ou Frog Pump", s:"3 séries de 15 repetições (cada perna)", obs:""},
+      {n:"Glúteo Cabo (abdução lateral)", s:"3 séries de 15 repetições (cada perna)", obs:""},
+      {n:"Cadeira Extensora Unilateral", s:"3 séries de 12 a 15 repetições (cada perna)", obs:""},
+      {n:"Mesa Flexora Unilateral", s:"3 séries de 12 a 15 repetições (cada perna)", obs:""},
+      {n:"Panturrilha em Pé (Peso livre ou máquina)", s:"4 séries de 15 a 20 repetições", obs:""},
+    ]
+  },
+];
+
+const BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
+const $ = s => document.querySelector(s);
+
+/* ---------- IMAGENS ---------- */
+function imgsHTML(name){
+  const id = IMG.hasOwnProperty(name) ? IMG[name] : undefined;
+  if(!id){
+    return `<div class="imgs one"><figure><div class="ph">${esc(name)}</div></figure></div>`;
+  }
+  const mk = i => {
+    const url = BASE+id+"/"+i+".jpg";
+    const ph = `<div class=&quot;ph&quot;>${esc(name)}</div>`;
+    return `<figure><img loading="lazy" src="${url}" alt="${esc(name)}" onerror="this.outerHTML='${ph}'"></figure>`;
+  };
+  return `<div class="imgs">${mk(0)}${mk(1)}</div>`;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ---------- ESTADO / LOCALSTORAGE ---------- */
+const LS_DONE = "treino_done_v1";
+function getDone(){ try{return JSON.parse(localStorage.getItem(LS_DONE))||{};}catch(e){return {};} }
+function setDone(d){ localStorage.setItem(LS_DONE, JSON.stringify(d)); }
+function exKey(wi, ei){ return wi+"-"+ei; }
+
+/* ---------- SELETOR INICIAL ---------- */
+function buildOpts(){
+  const box = $("#opts");
+  let h = "";
+  TREINOS.forEach((t,i)=>{
+    h += `<button class="opt" data-last="${i}">
+      <span class="num">${i+1}</span>
+      <span>${t.nome}${t.opt?" (opcional)":""}<span class="sub">${esc(t.desc)}</span></span>
+    </button>`;
+  });
+  h += `<button class="opt none" data-last="-1">
+      <span class="num">·</span>
+      <span>Nenhum / vou começar agora</span>
+    </button>`;
+  box.innerHTML = h;
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.onclick = ()=>{
+      const last = parseInt(b.dataset.last,10);
+      const next = last < 0 ? 0 : (last+1) % TREINOS.length;
+      openWorkout(next, true);
+    };
+  });
+}
+
+/* ---------- TABS ---------- */
+function buildTabs(active){
+  const box = $("#tabs");
+  box.innerHTML = TREINOS.map((t,i)=>
+    `<button class="tab${i===active?' active':''}${t.opt?' tab-opt':''}" data-i="${i}">${t.nome}</button>`
+  ).join("");
+  box.querySelectorAll(".tab").forEach(b=>{
+    b.onclick = ()=> openWorkout(parseInt(b.dataset.i,10), false);
+  });
+  const act = box.querySelector(".tab.active");
+  if(act) act.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"});
+}
+
+/* ---------- RENDER TREINO ---------- */
+let current = 0;
+function openWorkout(i, fromSelector){
+  current = i;
+  const t = TREINOS[i];
+  $("#home").classList.add("hidden");
+  $("#view").classList.remove("hidden");
+
+  // próximo treino destaque
+  const nb = $("#nextbar");
+  if(fromSelector){
+    nb.classList.remove("hidden");
+    $("#nextName").innerHTML = `${esc(t.nome)} <small>${esc(t.desc)}</small>`;
+    let hint = "Bom treino! 💪 Marque os exercícios conforme for fazendo.";
+    if(t.opt) hint = "Este é o treino opcional. Se não estiver disposta, pule e volte ao Superior 1.";
+    $("#nextHint").textContent = hint;
+  } else {
+    nb.classList.add("hidden");
+  }
+
+  buildTabs(i);
+
+  const done = getDone();
+  let h = `<div class="whead">
+      <div class="tag">${esc(t.tag)}</div>
+      <h2>${esc(t.nome)}</h2>
+      <div class="desc">${esc(t.desc)}</div>
+    </div>`;
+  if(t.aviso){
+    h += `<div class="aviso"><span>⚠️</span><span><b>Atenção:</b> ${esc(t.aviso)}</span></div>`;
+  }
+
+  t.ex.forEach((e,ei)=>{
+    const k = exKey(i,ei);
+    const isDone = !!done[k];
+    h += `<div class="ex${isDone?' done':''}" id="ex-${ei}">
+      <div class="row">
+        <label class="chk"><input type="checkbox" data-k="${k}" ${isDone?'checked':''}></label>
+        <div class="info">
+          <div class="name">${esc(e.n)}</div>
+          <div class="meta">
+            <span class="badge sets">${esc(e.s)}</span>
+            ${e.obs?`<span class="badge ${e.exec?'green':''}">${esc(e.obs)}</span>`:''}
+          </div>
+          ${imgsHTML(e.n)}
+        </div>
+      </div>
+    </div>`;
+  });
+
+  if(t.cardio){
+    h += `<div class="cardio"><span class="ic">🏃‍♀️</span><span><b>Cárdio:</b> ${esc(t.cardio)}</span></div>`;
+  }
+
+  $("#workout").innerHTML = h;
+
+  $("#workout").querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.onchange = ()=>{
+      const d = getDone();
+      if(cb.checked) d[cb.dataset.k]=1; else delete d[cb.dataset.k];
+      setDone(d);
+      cb.closest('.ex').classList.toggle('done', cb.checked);
+    };
+  });
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- NAVEGAÇÃO ---------- */
+$("#homeBtn").onclick = ()=>{
+  $("#view").classList.add("hidden");
+  $("#home").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+$("#allBtn").onclick = ()=> openWorkout(0, false);
+
+/* ---------- INIT ---------- */
+buildOpts();
+</script>
+</body>
+</html>
