@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>Treino da Semana</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --card:#1a1e26;
+    --card2:#222734;
+    --line:#333a48;
+    --txt:#ffffff;
+    --muted:#c2cad6;
+    --green:#2fe38f;
+    --green-dim:#10402d;
+    --green-txt:#6cf2b3;
+    --blue:#5aa9ff;
+    --blue-bg:#12283e;
+    --warn:#ffd45b;
+    --warn-bg:#3a3112;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:20px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:96px;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:18px 16px}
+
+  header.top{
+    background:#12151c;border-bottom:2px solid var(--line);
+    padding:18px 16px;text-align:center;
+  }
+  header.top .ttl{font-weight:800;font-size:26px;letter-spacing:.3px}
+
+  /* Princípios */
+  details.princ{
+    background:var(--card);border:2px solid var(--line);
+    border-radius:var(--radius);margin-bottom:20px;overflow:hidden;
+  }
+  details.princ summary{
+    list-style:none;cursor:pointer;padding:18px 18px;
+    font-weight:800;font-size:21px;display:flex;align-items:center;gap:10px;
+  }
+  details.princ summary::-webkit-details-marker{display:none}
+  details.princ summary .chev{margin-left:auto;color:var(--muted);font-size:26px;transition:transform .2s}
+  details.princ[open] summary .chev{transform:rotate(90deg)}
+  .princ-body{padding:0 18px 16px}
+  .princ-item{border-top:2px solid var(--line);padding:14px 0;font-size:19px;color:var(--muted)}
+  .princ-item b{color:var(--txt)}
+
+  /* Seletor de dias */
+  .pergunta{font-size:22px;font-weight:800;margin:6px 0 12px;text-align:center}
+  .dias{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px;
+  }
+  .dia{
+    background:var(--card2);border:2px solid var(--line);color:var(--txt);
+    border-radius:14px;padding:18px 4px 14px;font-size:20px;font-weight:800;
+    cursor:pointer;text-align:center;line-height:1.1;
+  }
+  .dia .dnum{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-top:5px}
+  .dia.active{background:var(--green);border-color:var(--green);color:#04140c}
+  .dia.active .dnum{color:#0a2a1c}
+  .dia.hoje::after{
+    content:"HOJE";display:block;font-size:11px;font-weight:800;
+    color:var(--green-txt);margin-top:4px;letter-spacing:.5px
+  }
+  .dia.active.hoje::after{color:#0a2a1c}
+
+  /* Fim de semana */
+  .fds{
+    display:none;background:linear-gradient(135deg,#21304a,#15202f);
+    border:2px solid var(--blue);border-radius:var(--radius);
+    padding:24px 18px;text-align:center;margin-bottom:18px;
+  }
+  .fds.show{display:block}
+  .fds .emo{font-size:46px;line-height:1}
+  .fds .big{font-size:24px;font-weight:800;margin-top:8px}
+  .fds .sub{font-size:18px;color:var(--muted);margin-top:6px}
+
+  /* Cabeçalho do dia */
+  .dhead{margin:8px 0 14px}
+  .dhead .tag{font-size:16px;color:var(--green-txt);font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+  .dhead h2{margin:3px 0 0;font-size:28px;line-height:1.15}
+
+  .aviso{
+    background:var(--warn-bg);border:2px solid #6a5616;color:#ffe9a6;
+    border-radius:14px;padding:14px 16px;font-size:18px;margin:0 0 16px;display:flex;gap:10px
+  }
+  .aviso b{color:var(--warn)}
+
+  /* Card de cárdio (no fim, clicável) */
+  .cardio-card{border-color:#2b5680;background:var(--blue-bg)}
+  .cardio-card .num.cnum{background:#1c3a55;color:#9bccff;font-size:24px}
+  .cardio-card .ctxt2{margin-top:12px;font-size:19px;color:var(--txt)}
+  .cardio-card .ctitle{color:#9bccff;font-size:17px;text-transform:uppercase;letter-spacing:.5px;font-weight:800}
+
+  /* Treino concluído */
+  .finish{
+    display:none;text-align:center;margin:6px 0 4px;
+    background:linear-gradient(135deg,#10402d,#13261d);
+    border:2px solid var(--green);border-radius:var(--radius);padding:26px 18px;
+  }
+  .finish.show{display:block;animation:pop .35s ease}
+  @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+  .finish .emo{font-size:48px;line-height:1}
+  .finish .big{font-size:26px;font-weight:800;margin-top:8px}
+  .finish .fsub{font-size:19px;color:#cfe9dd;margin-top:8px;line-height:1.45}
+  .finish button{
+    margin-top:18px;background:var(--green);border:none;color:#04140c;
+    font-weight:800;font-size:19px;border-radius:12px;padding:14px 24px;cursor:pointer
+  }
+  .finish button:active{transform:scale(.97)}
+
+  /* Cards de exercício */
+  .ex{
+    background:var(--card);border:2px solid var(--line);
+    border-radius:var(--radius);padding:16px;margin-bottom:16px;
+    transition:opacity .15s;
+  }
+  .ex.done{opacity:.62}
+  .ex .top{display:flex;align-items:flex-start;gap:14px}
+  .ex .num{
+    flex:none;width:40px;height:40px;border-radius:12px;background:var(--card2);
+    display:grid;place-items:center;font-size:20px;font-weight:800;color:var(--green-txt)
+  }
+  .ex .name{font-size:23px;font-weight:800;line-height:1.2;flex:1;min-width:0}
+  .ex.done .name,.ex.done .sets,.ex.done .ctxt2{
+    text-decoration:line-through;text-decoration-color:var(--green);text-decoration-thickness:3px
+  }
+  .ex .sets{
+    display:inline-block;margin-top:12px;background:#243049;color:#cfe0ff;
+    font-size:19px;font-weight:800;border-radius:10px;padding:8px 13px
+  }
+  .ex .obs{
+    margin-top:12px;background:var(--green-dim);color:var(--green-txt);
+    border:1px solid #1f6b48;border-radius:10px;padding:10px 13px;font-size:18px;font-weight:700
+  }
+
+  .imgs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .imgs figure{margin:0;border-radius:13px;overflow:hidden;background:#0c0e12;border:2px solid var(--line);aspect-ratio:1/1}
+  .imgs img{width:100%;height:100%;object-fit:cover;display:block;background:#0c0e12}
+  .ph{
+    width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:12px;background:repeating-linear-gradient(45deg,#1a1e26,#1a1e26 12px,#20252f 12px,#20252f 24px);
+    color:var(--muted);font-size:16px;font-weight:700;line-height:1.3
+  }
+
+  /* Checkbox feito */
+  .feito{
+    margin-top:14px;display:flex;align-items:center;gap:13px;
+    background:var(--card2);border:2px solid var(--line);border-radius:12px;
+    padding:13px 15px;cursor:pointer;user-select:none
+  }
+  .feito input{
+    appearance:none;flex:none;width:34px;height:34px;border-radius:9px;
+    border:3px solid var(--line);background:var(--bg);cursor:pointer;position:relative;
+  }
+  .feito input:checked{background:var(--green);border-color:var(--green)}
+  .feito input:checked::after{
+    content:"";position:absolute;left:11px;top:4px;width:8px;height:16px;
+    border:solid #04140c;border-width:0 4px 4px 0;transform:rotate(45deg)
+  }
+  .feito span{font-size:19px;font-weight:800;color:var(--muted)}
+  .feito input:checked ~ span{color:var(--green-txt)}
+
+  footer{
+    position:fixed;left:0;right:0;bottom:0;z-index:15;
+    background:#12151c;border-top:2px solid var(--line);
+    padding:14px 16px;font-size:15px;color:var(--muted);line-height:1.4;
+  }
+  footer .wrap2{max-width:720px;margin:0 auto}
+  footer b{color:var(--green-txt)}
+  footer .med{display:block;margin-top:6px;font-style:italic}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="ttl">🏋️ Treino da Semana</div>
+</header>
+
+<main class="wrap">
+
+  <!-- PRINCÍPIOS -->
+  <details class="princ" id="princ">
+    <summary>📋 Princípios <span class="chev">›</span></summary>
+    <div class="princ-body">
+      <div class="princ-item"><b>Objetivo:</b> manter as cargas que você já domina, preservando a massa magra (músculo).</div>
+      <div class="princ-item"><b>Descanso:</b> 1h30 a 2 minutos nos exercícios compostos (os mais pesados).</div>
+      <div class="princ-item"><b>Tempo de sessão:</b> 1h30 a 1h45 (cerca de 50 min de musculação + 40 a 45 min de bike).</div>
+    </div>
+  </details>
+
+  <!-- SELETOR DE DIAS -->
+  <div class="pergunta">Qual dia você quer treinar?</div>
+  <div class="dias" id="dias"></div>
+
+  <!-- FIM DE SEMANA -->
+  <div class="fds" id="fds">
+    <div class="emo">💆</div>
+    <div class="big">Fim de semana — dia de descanso</div>
+    <div class="sub">Aproveite! Se quiser, toque em um dia acima para ver o treino.</div>
+  </div>
+
+  <!-- TREINO DO DIA -->
+  <div id="treino"></div>
+
+</main>
+
+<footer>
+  <div class="wrap2">
+    <b>Proteína ~1,6 a 2,0 g/kg por dia</b> ajuda a preservar o músculo. Caminhar no dia a dia soma mais que cárdio extra.
+    <span class="med">"Ajustes de carga e volume devem passar pelo médico/profissional que a acompanha."</span>
+  </div>
+</footer>
+
+<script>
+/* ---------- MAPA DE IMAGENS (verificado, 200) ---------- */
+const IMG = {
+  "Agachamento Livre ou no Smith": "Barbell_Full_Squat",
+  "Leg Press 45º (pés mais baixos, na largura do quadril)": "Leg_Press",
+  "Passada ou Afundo (Halteres)": "Dumbbell_Lunges",
+  "Cadeira Extensora": "Leg_Extensions",
+  "Panturrilha no Leg Press": "Calf_Press_On_The_Leg_Press_Machine",
+  "Panturrilha Sentado (Máquina)": "Seated_Calf_Raise",
+  "Puxada Alta (Pegada Pronada)": "Wide-Grip_Lat_Pulldown",
+  "Remada Curvada ou Baixa na Polia": "Seated_Cable_Rows",
+  "Pulldown com corda": "Rope_Straight-Arm_Pulldown",
+  "Rosca Direta (Polia ou Halter)": "Barbell_Curl",
+  "Prancha Abdominal": "Plank",
+  "Elevação Pélvica (Barra ou Máquina)": "Barbell_Hip_Thrust",
+  "Stiff ou Levantamento Terra Romeno": "Romanian_Deadlift",
+  "Cadeira Flexora": "Seated_Leg_Curl",
+  "Mesa Flexora": "Lying_Leg_Curls",
+  "Cadeira Abdutora": "Thigh_Abductor",
+  "Supino Reto ou Inclinado (Máquina)": "Machine_Bench_Press",
+  "Desenvolvimento com Halteres": "Dumbbell_Shoulder_Press",
+  "Elevação Lateral (Halter ou Polia)": "Side_Lateral_Raise",
+  "Tríceps Polia (Corda)": "Triceps_Pushdown_-_Rope_Attachment",
+  "Abdominal Infra (Elevação de pernas)": "Flat_Bench_Lying_Leg_Raise",
+  "Bulgaro (Agachamento Búlgaro)": "Split_Squat_with_Dumbbells",
+  "Glúteo na Polia (Coice)": "One-Legged_Cable_Kickback",
+  "Cadeira Extensora Unilateral": "Single-Leg_Leg_Extension",
+  "Panturrilha em pé": "Standing_Calf_Raises"
+};
+
+/* ---------- TREINOS (índice 0=SEG ... 4=SEX) ---------- */
+// obs -> observação de execução (destaque verde)
+const DIAS = [
+  {sigla:"SEG", nomeDia:"Segunda", nome:"Inferior 1 — Foco Quadríceps", tag:"Segunda-feira",
+    cardio:"Sem cárdio, ou no máximo 15 min de bike leve para soltar as pernas.",
+    msg:"Treino de segunda concluído! 💪 Cada agachamento é mais força e autonomia pra vida toda. Mandou muito bem!",
+    ex:[
+      {n:"Agachamento Livre ou no Smith", s:"4 séries de 8 a 10 repetições"},
+      {n:"Leg Press 45º (pés mais baixos, na largura do quadril)", s:"4 séries de 10 a 12 repetições"},
+      {n:"Passada ou Afundo (Halteres)", s:"3 séries de 10 a 12 repetições (cada perna)"},
+      {n:"Cadeira Extensora", s:"4 séries de 12 a 15 repetições", obs:"Isometria de 2 segundos no topo"},
+      {n:"Panturrilha no Leg Press", s:"4 séries de 15 repetições"},
+      {n:"Panturrilha Sentado (Máquina)", s:"3 séries de 15 repetições"},
+    ]
+  },
+  {sigla:"TER", nomeDia:"Terça", nome:"Superior 1 — Costas, Bíceps e Core", tag:"Terça-feira · Cárdio longo",
+    cardio:"45 min de bike (intensidade moderada, cadência constante) ou esteira inclinada.",
+    msg:"Treino de terça concluído! 👏 Costas fortes, postura de rainha e o coração agradecido pelo cárdio. Orgulho de você!",
+    ex:[
+      {n:"Puxada Alta (Pegada Pronada)", s:"3 séries de 10 a 12 repetições"},
+      {n:"Remada Curvada ou Baixa na Polia", s:"3 séries de 10 a 12 repetições"},
+      {n:"Pulldown com corda", s:"3 séries de 12 a 15 repetições"},
+      {n:"Rosca Direta (Polia ou Halter)", s:"3 séries de 12 a 15 repetições"},
+      {n:"Prancha Abdominal", s:"3 séries no máximo tempo", obs:"Segure o quanto aguentar"},
+    ]
+  },
+  {sigla:"QUA", nomeDia:"Quarta", nome:"Inferior 2 — Posteriores e Glúteo", tag:"Quarta-feira",
+    cardio:"Sem cárdio pesado; apenas 15 min de bike leve, se desejar.",
+    msg:"Treino de quarta concluído! 🙌 Glúteos e posteriores firmes — seus joelhos e sua lombar agradecem. Que capricho!",
+    ex:[
+      {n:"Elevação Pélvica (Barra ou Máquina)", s:"4 séries de 8 a 10 repetições"},
+      {n:"Stiff ou Levantamento Terra Romeno", s:"4 séries de 8 a 10 repetições"},
+      {n:"Cadeira Flexora", s:"4 séries de 10 a 12 repetições"},
+      {n:"Mesa Flexora", s:"3 séries de 10 a 12 repetições"},
+      {n:"Cadeira Abdutora", s:"4 séries de 15 repetições", obs:"Tronco levemente inclinado para frente"},
+    ]
+  },
+  {sigla:"QUI", nomeDia:"Quinta", nome:"Superior 2 — Peito, Ombro e Tríceps", tag:"Quinta-feira · Cárdio longo",
+    cardio:"45 min de bike ou esteira inclinada.",
+    msg:"Treino de quinta concluído! 💪 Ombros e braços mais fortes pra carregar a vida com leveza. Arrasou!",
+    ex:[
+      {n:"Supino Reto ou Inclinado (Máquina)", s:"3 séries de 10 a 12 repetições"},
+      {n:"Desenvolvimento com Halteres", s:"3 séries de 10 a 12 repetições"},
+      {n:"Elevação Lateral (Halter ou Polia)", s:"4 séries de 12 a 15 repetições"},
+      {n:"Tríceps Polia (Corda)", s:"3 séries de 12 a 15 repetições"},
+      {n:"Abdominal Infra (Elevação de pernas)", s:"3 séries de 15 repetições"},
+    ]
+  },
+  {sigla:"SEX", nomeDia:"Sexta", nome:"Inferior 3 — Metabólico e Glúteo", tag:"Sexta-feira · Cárdio",
+    aviso:"Cargas levemente menores e repetições mais altas. Evite estresse na lombar.",
+    cardio:"30 a 40 min de bike ou esteira inclinada.",
+    msg:"Treino de sexta concluído! 🎉 Você fechou a semana inteira! Que exemplo. Agora é descanso bem merecido.",
+    ex:[
+      {n:"Bulgaro (Agachamento Búlgaro)", s:"3 séries de 10 a 12 repetições (cada perna)"},
+      {n:"Cadeira Abdutora", s:"4 séries de 15 a 20 repetições", obs:"Com isometria"},
+      {n:"Glúteo na Polia (Coice)", s:"3 séries de 12 a 15 repetições (cada perna)"},
+      {n:"Cadeira Extensora Unilateral", s:"3 séries de 12 a 15 repetições (cada perna)"},
+      {n:"Panturrilha em pé", s:"4 séries de 15 a 20 repetições"},
+    ]
+  },
+];
+
+const BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
+const $ = s => document.querySelector(s);
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ---------- IMAGENS ---------- */
+function imgsHTML(name){
+  const id = IMG.hasOwnProperty(name) ? IMG[name] : undefined;
+  if(!id){
+    return `<div class="imgs"><figure><div class="ph">${esc(name)}</div></figure><figure><div class="ph">${esc(name)}</div></figure></div>`;
+  }
+  const mk = i => {
+    const url = BASE+id+"/"+i+".jpg";
+    const ph = `<div class=&quot;ph&quot;>${esc(name)}</div>`;
+    return `<figure><img loading="lazy" src="${url}" alt="${esc(name)}" onerror="this.outerHTML='${ph}'"></figure>`;
+  };
+  return `<div class="imgs">${mk(0)}${mk(1)}</div>`;
+}
+
+/* ---------- ESTADO / LOCALSTORAGE ---------- */
+const LS_DONE = "treino_mae_done_v1";
+function getDone(){ try{return JSON.parse(localStorage.getItem(LS_DONE))||{};}catch(e){return {};} }
+function setDone(d){ localStorage.setItem(LS_DONE, JSON.stringify(d)); }
+function exKey(di, ei){ return di+"-"+ei; }
+
+/* ---------- DIA DE HOJE ---------- */
+// getDay(): 0=Dom,1=Seg...6=Sáb. Mapeia Seg..Sex -> 0..4; sáb/dom -> -1 (fim de semana)
+function hojeIndex(){
+  const d = new Date().getDay();
+  return (d>=1 && d<=5) ? d-1 : -1;
+}
+
+/* ---------- BOTÕES DOS DIAS ---------- */
+let atual = 0;
+function buildDias(hoje){
+  const box = $("#dias");
+  box.innerHTML = DIAS.map((d,i)=>
+    `<button class="dia${i===hoje?' hoje':''}" data-i="${i}"><span class="dlabel">${d.sigla}</span></button>`
+  ).join("");
+  box.querySelectorAll(".dia").forEach(b=>{
+    b.onclick = ()=> abrirDia(parseInt(b.dataset.i,10));
+  });
+}
+function marcarAtivo(i){
+  $("#dias").querySelectorAll(".dia").forEach(b=>{
+    b.classList.toggle("active", parseInt(b.dataset.i,10)===i);
+  });
+}
+
+/* ---------- RENDER DIA ---------- */
+function abrirDia(i){
+  atual = i;
+  const d = DIAS[i];
+  $("#fds").classList.remove("show");
+  marcarAtivo(i);
+
+  const done = getDone();
+  let h = `<div class="dhead">
+      <div class="tag">${esc(d.tag)}</div>
+      <h2>${esc(d.nome)}</h2>
+    </div>`;
+
+  if(d.aviso){
+    h += `<div class="aviso"><span>⚠️</span><span><b>Atenção:</b> ${esc(d.aviso)}</span></div>`;
+  }
+
+  d.ex.forEach((e,ei)=>{
+    const k = exKey(i,ei);
+    const isDone = !!done[k];
+    h += `<div class="ex${isDone?' done':''}">
+      <div class="top">
+        <div class="num">${ei+1}</div>
+        <div class="name">${esc(e.n)}</div>
+      </div>
+      <div><span class="sets">${esc(e.s)}</span></div>
+      ${e.obs?`<div class="obs">✅ ${esc(e.obs)}</div>`:''}
+      ${imgsHTML(e.n)}
+      <label class="feito"><input type="checkbox" data-k="${k}" ${isDone?'checked':''}><span>Marcar como feito</span></label>
+    </div>`;
+  });
+
+  // Cárdio no FIM do treino, também clicável como concluído
+  const ck = i+"-cardio";
+  const cDone = !!done[ck];
+  h += `<div class="ex cardio-card${cDone?' done':''}">
+      <div class="top">
+        <div class="num cnum">🚴</div>
+        <div class="name"><span class="ctitle">Cárdio do dia</span></div>
+      </div>
+      <div class="ctxt2">${esc(d.cardio)}</div>
+      <label class="feito"><input type="checkbox" data-k="${ck}" ${cDone?'checked':''}><span>Marcar como feito</span></label>
+    </div>`;
+
+  // Mensagem final (motivacional, diferente por dia)
+  h += `<div class="finish" id="finish">
+      <div class="emo">🎉</div>
+      <div class="big">Treino concluído!</div>
+      <div class="fsub">${esc(d.msg)}</div>
+      <button id="clearBtn">Recomeçar este treino</button>
+    </div>`;
+
+  $("#treino").innerHTML = h;
+
+  $("#treino").querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.onchange = ()=>{
+      const dd = getDone();
+      if(cb.checked) dd[cb.dataset.k]=1; else delete dd[cb.dataset.k];
+      setDone(dd);
+      cb.closest('.ex').classList.toggle('done', cb.checked);
+      const completo = updateFinish();
+      if(completo) $("#finish").scrollIntoView({behavior:"smooth",block:"center"});
+    };
+  });
+
+  $("#clearBtn").onclick = ()=>{
+    const dd = getDone();
+    DIAS[i].ex.forEach((e,ei)=> delete dd[exKey(i,ei)]);
+    delete dd[i+"-cardio"];
+    setDone(dd);
+    abrirDia(i);
+  };
+
+  updateFinish();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// Mostra a mensagem final quando todos os exercícios + cárdio estão marcados.
+function updateFinish(){
+  const d = DIAS[atual];
+  const done = getDone();
+  const todosEx = d.ex.every((e,ei)=> done[exKey(atual,ei)]);
+  const cardioFeito = !!done[atual+"-cardio"];
+  const completo = todosEx && cardioFeito;
+  const f = $("#finish");
+  if(f) f.classList.toggle("show", completo);
+  return completo;
+}
+
+/* ---------- INIT ---------- */
+(function init(){
+  const hoje = hojeIndex();
+  buildDias(hoje);
+  if(hoje === -1){
+    // fim de semana: mostra mensagem, nenhum dia selecionado, treino vazio
+    $("#fds").classList.add("show");
+    $("#treino").innerHTML = "";
+  } else {
+    abrirDia(hoje);
+  }
+})();
+</script>
+</body>
+</html>
